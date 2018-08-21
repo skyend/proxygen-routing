@@ -72,7 +72,7 @@ Router::addRoute(shared_ptr<AbstractRoute> route)
 void
 Router::compile()
 {
-    char *errstr = NULL;;;;
+    char *errstr = NULL;
     if (this->tree.compile(&errstr) != 0)
     {
         LOG(ERROR) << "Compilation failed: " << errstr;
@@ -109,7 +109,7 @@ Router::onRequest(
         return new DefaultRouteHandler(500, "Internal Server Error");
     }
 
-    entry.set_request_method(AbstractRoute::proxygen_to_r3_method(method.get()));
+    entry.set_request_method(AbstractRoute::proxygen_to_r3_method(*method.get_pointer()));
 
     r3::Route match = this->tree.match_route(entry);
     if (!match)
@@ -120,7 +120,7 @@ Router::onRequest(
 
     AbstractRoute *route = (AbstractRoute *) match.data();
 
-    LOG(INFO) << (*route) << ": " << path;
+//    LOG(INFO) << (*route) << ": " << path;
 
     auto entry_ptr = entry.get();
     auto params = ParameterSet();
