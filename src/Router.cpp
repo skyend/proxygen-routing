@@ -55,10 +55,12 @@ Router::addRoute(shared_ptr<AbstractRoute> route)
 
     LOG(INFO) << "Adding route \"" << route->path << "\"";
 
+  auto r = route.get();
+
     if (this->tree.insert_route(
         route->r3_method(),
         route->c_path(),
-        (void *) route.get(),
+        (void *) r,
         &errstr) == NULL)
     {
         LOG(ERROR) << "Failed to add route \""
@@ -109,7 +111,8 @@ Router::onRequest(
         return new DefaultRouteHandler(500, "Internal Server Error");
     }
 
-    entry.set_request_method(AbstractRoute::proxygen_to_r3_method(*method.get_pointer()));
+  proxygen::HTTPMethod httpMethod = *(method.get_pointer());
+  entry.set_request_method(AbstractRoute::proxygen_to_r3_method(httpMethod));
 
     r3::Route match = this->tree.match_route(entry);
     if (!match)
